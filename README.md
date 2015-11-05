@@ -34,19 +34,19 @@ var bc = Ti.Android.createBroadcastReceiver({
 		Ti.API.info("cn.jpush.android.TITLE: " 			+ e.intent.getStringExtra("cn.jpush.android.TITLE"));
 		Ti.API.info("cn.jpush.android.MESSAGE: " 		+ e.intent.getStringExtra("cn.jpush.android.MESSAGE"));
 		Ti.API.info("cn.jpush.android.CONTENT_TYPE: " 	+ e.intent.getStringExtra("cn.jpush.android.CONTENT_TYPE"));
-		var str = e.intent.getStringExtra("cn.jpush.android.EXTRA"); 
+		var str = e.intent.getStringExtra("cn.jpush.android.EXTRA");
 		if (str && str.length > 0){
 			show_alert("提示", e.intent.getStringExtra("cn.jpush.android.EXTRA"));
 		}
 	}
 });
-		 
+
 Ti.Android.registerBroadcastReceiver(bc, ['mamashai_jpush']);
 //一定要释放掉，否则容易出问题
 win.addEventListener("close", function(){
 	Ti.Android.unregisterBroadcastReceiver(bc);
-});	
-		
+});
+
 //收到推送，还未打开
 var bc2 = Ti.Android.createBroadcastReceiver({
     onReceived : function(e) {
@@ -58,10 +58,39 @@ Ti.Android.registerBroadcastReceiver(bc2, ['mamashai_jpush_received']);
 //一定要释放掉，否则容易出问题
 win.addEventListener("close", function(){
 	Ti.Android.unregisterBroadcastReceiver(bc2);
-});	
-```	
+});
+```
 
-使用module前还需要对tiapp.xml进行配置，在android->mainifest->application下添加如下配置信息，部分信息如包名、jpush appkey需要改成自己的值。
+使用module前还需要对tiapp.xml进行配置。
+在android->mainifest下添加如下配置信息，包名需要改成自己的值.
+
+```xml
+<permission android:name="<YOUR APP ID>.permission.JPUSH_MESSAGE" android:protectionLevel="signature" />
+
+<!-- Required -->
+<uses-permission android:name="<YOUR APP ID>.permission.JPUSH_MESSAGE" />
+<uses-permission android:name="android.permission.RECEIVE_USER_PRESENT" />
+<uses-permission android:name="android.permission.INTERNET" />
+<uses-permission android:name="android.permission.WAKE_LOCK" />
+<uses-permission android:name="android.permission.READ_PHONE_STATE" />
+<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+<uses-permission android:name="android.permission.VIBRATE" />
+<uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS" />
+<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+<uses-permission android:name="android.permission.WRITE_SETTINGS" />
+
+<!-- Optional. Required for location feature -->
+<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+<uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+<uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+<uses-permission android:name="android.permission.ACCESS_LOCATION_EXTRA_COMMANDS" />
+<uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
+```
+
+在android->mainifest->application下添加如下配置信息，部分信息如包名、jpush appkey需要改成自己的值。
+
 ```xml
 <service android:enabled="true" android:exported="false" android:name="cn.jpush.android.service.PushService">
 	<intent-filter>
@@ -74,7 +103,7 @@ win.addEventListener("close", function(){
 <receiver android:enabled="true" android:name="cn.jpush.android.service.PushReceiver">
 	<intent-filter android:priority="1000">
 		<action android:name="cn.jpush.android.intent.NOTIFICATION_RECEIVED_PROXY"/>
-		<category android:name="com.mamashai.babycalendar"/>
+		<category android:name="<YOUR APP ID>"/>
 	</intent-filter>
         <intent-filter>
 		<action android:name="android.intent.action.USER_PRESENT"/>
@@ -100,7 +129,7 @@ win.addEventListener("close", function(){
                 <!--Optional 用户接受Rich Push Javascript 回调函数的intent-->
                 <action android:name="cn.jpush.android.intent.CONNECTION"/>
                 <!-- 接收网络变化 连接/断开 since 1.6.3 -->
-                <category android:name="com.mamashai.babycalendar"/>
+                <category android:name="<YOUR APP ID>"/>
         </intent-filter>
 </receiver>
 <activity
@@ -109,7 +138,7 @@ win.addEventListener("close", function(){
 	<intent-filter>
 		<action android:name="cn.jpush.android.ui.PushActivity"/>
 		<category android:name="android.intent.category.DEFAULT"/>
-		<category android:name="com.mamashai.babycalendar"/>
+		<category android:name="<YOUR APP ID>"/>
 	</intent-filter>
 	</activity>
 <service android:enabled="true" android:exported="false" android:name="cn.jpush.android.service.DownloadService"/>
@@ -121,5 +150,5 @@ win.addEventListener("close", function(){
 <!-- 发到其他市场的 APK 可以设置为 xxx-market。 -->
 <!-- 目前这个渠道统计功能的报表还未开放。-->
 <meta-data android:name="JPUSH_CHANNEL" android:value="c_1980"/>
-<meta-data android:name="JPUSH_APPKEY" android:value="b789c8ed387ca31a1569c932"/>
+<meta-data android:name="JPUSH_APPKEY" android:value="<YOUR JPUSH APPKEY>"/>
 ```
